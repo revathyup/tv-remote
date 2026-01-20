@@ -16,7 +16,7 @@ app.use("/images", express.static(adminImagesDir));
 function readImages() {
   if (!fs.existsSync(adminImagesDir)) return [];
   const files = fs.readdirSync(adminImagesDir);
-  return files.filter(file => /\.(jpg|jpeg|png|webp|gif)$/i.test(file));
+  return files.filter(file => /\.(jpg|jpeg|png|webp|gif|mp4|webm|mov|m4v)$/i.test(file));
 }
 
 function readOrder() {
