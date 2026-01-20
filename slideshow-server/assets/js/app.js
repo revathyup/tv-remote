@@ -5,7 +5,7 @@ img.alt = "Slideshow image";
 const video = document.createElement("video");
 video.muted = true;
 video.playsInline = true;
-video.preload = "metadata";
+video.preload = "auto";
 app.appendChild(img);
 app.appendChild(video);
 
@@ -74,6 +74,7 @@ function showNextImage() {
 function showImage(name) {
   video.pause();
   video.removeAttribute("src");
+  video.load();
   video.style.display = "none";
   img.style.display = "block";
   img.src = "/images/" + name;
@@ -93,13 +94,16 @@ function showVideo(name) {
 video.addEventListener("loadedmetadata", () => {
   if (lastMode !== "video") return;
   if (Number.isFinite(video.duration) && video.duration > 0) {
-    scheduleNext(Math.ceil(video.duration * 1000));
-  } else {
-    scheduleNext(15000);
+    // Let the video end naturally; duration is informative only.
+    return;
   }
 });
 
 video.addEventListener("ended", () => {
+  showNextImage();
+});
+
+video.addEventListener("error", () => {
   showNextImage();
 });
 
