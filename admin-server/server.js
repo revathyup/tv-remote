@@ -251,6 +251,9 @@ app.get('/', (req, res) => {
           const input = document.getElementById('fileInput');
           const form = document.getElementById('uploadForm');
 
+          window.addEventListener('dragover', (e) => e.preventDefault());
+          window.addEventListener('drop', (e) => e.preventDefault());
+
           drop.addEventListener('dragover', (e) => {
             e.preventDefault();
             drop.classList.add('drag');
