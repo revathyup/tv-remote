@@ -2,10 +2,17 @@ const app = document.getElementById("app");
 
 const img = document.createElement("img");
 img.alt = "Slideshow image";
+const video = document.createElement("video");
+video.muted = true;
+video.playsInline = true;
+video.preload = "metadata";
 app.appendChild(img);
+app.appendChild(video);
 
 let images = [];
 let queue = [];
+let advanceTimer = null;
+let lastMode = "image";
 
 function shuffle(list) {
   const arr = [...list];
@@ -18,6 +25,15 @@ function shuffle(list) {
 
 function rebuildQueue() {
   queue = shuffle(images);
+}
+
+function isVideo(name) {
+  return /\.(mp4|webm|mov|m4v)$/i.test(name);
+}
+
+function scheduleNext(ms) {
+  if (advanceTimer) clearTimeout(advanceTimer);
+  advanceTimer = setTimeout(showNextImage, ms);
 }
 
 async function fetchImages() {
@@ -40,6 +56,7 @@ async function fetchImages() {
 }
 
 function showNextImage() {
+  if (advanceTimer) clearTimeout(advanceTimer);
   if (images.length === 0) return;
 
   if (queue.length === 0) {
@@ -47,13 +64,47 @@ function showNextImage() {
   }
 
   const next = queue.shift();
-  img.src = "/images/" + next;
+  if (isVideo(next)) {
+    showVideo(next);
+  } else {
+    showImage(next);
+  }
 }
+
+function showImage(name) {
+  video.pause();
+  video.removeAttribute("src");
+  video.style.display = "none";
+  img.style.display = "block";
+  img.src = "/images/" + name;
+  lastMode = "image";
+  scheduleNext(10000);
+}
+
+function showVideo(name) {
+  img.style.display = "none";
+  video.style.display = "block";
+  video.src = "/images/" + name;
+  video.currentTime = 0;
+  video.play().catch(() => {});
+  lastMode = "video";
+}
+
+video.addEventListener("loadedmetadata", () => {
+  if (lastMode !== "video") return;
+  if (Number.isFinite(video.duration) && video.duration > 0) {
+    scheduleNext(Math.ceil(video.duration * 1000));
+  } else {
+    scheduleNext(15000);
+  }
+});
+
+video.addEventListener("ended", () => {
+  showNextImage();
+});
 
 (async function start() {
   await fetchImages();
   showNextImage();
-
-  setInterval(showNextImage, 10_000);
   setInterval(fetchImages, 60_000);
 })();
