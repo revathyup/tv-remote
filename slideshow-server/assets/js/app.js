@@ -1,4 +1,5 @@
 const app = document.getElementById("app");
+const clock = document.getElementById("clock");
 
 const img = document.createElement("img");
 img.alt = "Slideshow image";
@@ -13,6 +14,15 @@ let images = [];
 let queue = [];
 let advanceTimer = null;
 let lastMode = "image";
+
+function updateClock() {
+  if (!clock) return;
+  const now = new Date();
+  clock.textContent = now.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 function shuffle(list) {
   const arr = [...list];
@@ -111,4 +121,6 @@ video.addEventListener("error", () => {
   await fetchImages();
   showNextImage();
   setInterval(fetchImages, 60_000);
+  updateClock();
+  setInterval(updateClock, 1000);
 })();

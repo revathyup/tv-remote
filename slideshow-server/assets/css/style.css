@@ -7,9 +7,33 @@ body {
     background: rgb(0, 0, 0);
 }
 
-#app {
+#layout {
+    display: flex;
     width: 100vw;
     height: 100vh;
+    overflow: hidden;
+}
+
+#info-panel {
+    width: 260px;
+    min-width: 220px;
+    background: #d6cec4;
+    color: #e8edf2;
+    padding: 24px 20px;
+    box-sizing: border-box;
+}
+
+#clock {
+    font-size: 48px;
+    text-align: center;
+    color: black;
+    font-family: "Consolas", "Lucida Console", "Courier New", monospace;
+    letter-spacing: 0.5px;
+}
+
+#app {
+    flex: 1;
+    height: 100%;
     overflow: hidden;
 }
 
